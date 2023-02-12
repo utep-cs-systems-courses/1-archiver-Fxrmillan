@@ -2,12 +2,6 @@ import os
 import sys
 from os import read, write
 
-filesToPrint = sys.argv[1:]
-ifd = filesToPrint[0]
-compressedFile = os.path.join(os.getcwd() + "/tar", "compressed.txt")
-bytesNames = os.path.join(os.getcwd() + "/tar", "bytesAndNames.txt")
-
-
 
 def findingLengthandName(filesToPrint, fileDescryptor):
     for files in filesToPrint:
@@ -76,15 +70,27 @@ def extractFile(bytesAndNames,fd):
         count += 1
 
 
-if filesToPrint[0] == "c" or filesToPrint[0] == "C":
-    intializeFolder()
-    filesToPrint = filesToPrint[1:]
+def createCompressed():
+    compressed = os.open(createTarFile("compressed.txt"), os.O_RDWR)
+    tarFileMaker(filesToPrint, compressed)
+    os.close(compressed)
+
+
+def createBytesAndNames():
     bytesAndNames = os.open(createTarFile("bytesAndNames.txt"), os.O_RDWR)
     findingLengthandName(filesToPrint, bytesAndNames)
     os.close(bytesAndNames)
-    compressed = os.open(createTarFile("compressed.txt"),os.O_RDWR)
-    tarFileMaker(filesToPrint, compressed)
-    os.close(bytesAndNames)
+
+filesToPrint = sys.argv[1:]
+ifd = filesToPrint[0]
+compressedFile = os.path.join(os.getcwd() + "/tar", "compressed.txt")
+bytesNames = os.path.join(os.getcwd() + "/tar", "bytesAndNames.txt")
+
+if filesToPrint[0] == "c" or filesToPrint[0] == "C":
+    intializeFolder()
+    filesToPrint = filesToPrint[1:]
+    createBytesAndNames()
+    createCompressed()
 elif filesToPrint[0] == "x" or filesToPrint[0] == "X":
     filesToPrint = filesToPrint[1:]
     listofNamesAndBytes = getNamesAndSizes(bytesNames)
@@ -92,8 +98,3 @@ elif filesToPrint[0] == "x" or filesToPrint[0] == "X":
 else:
     os.write(1, "ERROR MODE NOT RECOGNIZED".encode())
 
-# nameOfNewFile = createTarFile(getFileNames(fd, bytesToRead[count]))
-#       count += 1
-#      newFile = os.open(nameOfNewFile, os.O_RDWR)
-#     os.write(newFile, read(fd,bytesToRead[count]))
-#    count += 1
